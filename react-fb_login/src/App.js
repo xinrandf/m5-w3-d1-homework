@@ -11,15 +11,13 @@ function App() {
 
   const responseFacebook = (response) => {
     console.log(response);
+    setData(response);
+    setPicture(response.picture?.data?.url || "");
 
     if (response.accessToken) {
       setLogin(true);
-      setData(response);
-      setPicture(response.picture?.data?.url || "");
     } else {
       setLogin(false);
-      setData({});
-      setPicture("");
     }
   };
 
@@ -32,20 +30,26 @@ function App() {
 
         <Card.Body>
           <Card.Text>
-            <h3>Please login using one of the following:</h3>
+            {!login && (
+              <React.Fragment>
+                <h3>Please login using one of the following:</h3>
 
-            {/* Login Form */}
-            <LoginForm />
+                {/* Login Form */}
+                <LoginForm />
 
-            {/* FB Login Button */}
-            <FacebookLogin
-              appId="1088597931155576"
-              autoLoad={false}
-              fields="name,email,picture"
-              scope="public_profile,user_friends"
-              callback={responseFacebook}
-              icon="fa-facebook"
-            />
+                {/* FB Login Button */}
+                <FacebookLogin
+                  appId="PUT_YOUR_OWN_APP_ID_HERE"
+                  autoLoad={false}
+                  fields="name,email,picture"
+                  scope="public_profile,user_friends"
+                  callback={responseFacebook}
+                  icon="fa-facebook"
+                />
+              </React.Fragment>
+            )}
+
+            {login && <Home fbpic={picture} fbdata={data} />}
           </Card.Text>
         </Card.Body>
       </Card>
@@ -68,6 +72,20 @@ function LoginForm() {
         className="btn bg-success text-white my-3"
       />
     </form>
+  );
+}
+
+function Home(props) {
+  return (
+    <div className="text-center">
+      <img
+        src={props.fbpic}
+        alt="profile"
+        className="img-fluid rounded-circle mb-3"
+      />
+      <h3>Welcome {props.fbdata.name}</h3>
+      <p>{props.fbdata.email}</p>
+    </div>
   );
 }
 
